@@ -37,7 +37,7 @@ jobs:
           pr_title: "Major version bump for ${{ github.ref }} into main" # Title of pull request
           pr_body: ":crown: *An automated PR* for major version update"              # Full markdown support, requires pr_title
           pr_reviewer: "tangxifan"                          # Comma-separated list (no spaces)
-          pr_assignee: "Tulong4Dev"                    # Comma-separated list (no spaces)
+          pr_assignee: "tangxifan"                    # Comma-separated list (no spaces)
           pr_label: "auto-pr"                               # Comma-separated list (no spaces)
           pr_allow_empty: true                              # Creates pull request even if there are no changes
           github_token: ${{ secrets.GITHUB_TOKEN }}

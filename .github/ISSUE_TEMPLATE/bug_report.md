@@ -10,7 +10,7 @@ assignees: ''
 > **Describe the bug**
 > A clear and concise description of what the bug is.
 <!--- Uncomment relevant options --->
-<!-- Which part of ArkAngel is buggy -->
+<!-- Which part of the project is buggy -->
 <!--- [ ] Documentation --->
 <!--- [ ] Graphical User Interface --->
 <!--- [ ] EDA engines --->
