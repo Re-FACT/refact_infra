@@ -21,6 +21,7 @@ error_codes = {"SUCCESS": 0, "MD5_ERROR": 1, "OPTION_ERROR": 2, "FILE_ERROR": 3}
 #####################################################################
 logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
 
+
 #####################################################################
 # Check options
 # - Only one of 'create_md5' and 'check_md5' is enabled

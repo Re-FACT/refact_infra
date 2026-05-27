@@ -31,6 +31,7 @@ space_limit = 80  # Maximum space tuned for the screen width
 #####################################################################
 logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
 
+
 #####################################################################
 # Check options
 # - Only one of 'create_md5' and 'check_md5' is enabled

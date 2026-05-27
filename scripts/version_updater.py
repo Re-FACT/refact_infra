@@ -19,6 +19,7 @@ error_codes = {"SUCCESS": 0, "ERROR": 1, "FILE_ERROR": 2}
 
 SPACE_LIMIT = 80  # Maximum space tuned for the screen width
 
+
 #####################################################################
 # Read tagged commit from a file
 #####################################################################

@@ -9,6 +9,7 @@ from datetime import datetime
 
 # Constants
 
+
 # Class of a PTPX sdc generator
 class VersionManager:
     def __init__(self):
