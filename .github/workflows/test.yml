@@ -1,0 +1,30 @@
+name: Regression Tests
+
+# Only run for pull requests as we care contribution to the master
+# - There are changes in RTL files
+on:
+  pull_request:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  reg_test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo python3 -m pip install -r requirements.txt
+
+      - name: Run test
+        shell: bash
+        run: |
+          make reg_test
