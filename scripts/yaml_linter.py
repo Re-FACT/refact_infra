@@ -24,6 +24,7 @@ YAML_EXTENSIONS = {".yaml", ".yml"}
 # Discovery
 # ---------------------------------------------------------------------------
 
+
 def resolve_roots(pattern: str) -> list[Path]:
     """
     Resolve a path argument into a list of existing directories.
@@ -84,7 +85,10 @@ def find_yaml_files(roots: list[Path]) -> list[Path]:
 # Linting
 # ---------------------------------------------------------------------------
 
-def run_yamllint(file: Path, config: str | None, strict: bool, quiet: bool) -> tuple[int, list[str]]:
+
+def run_yamllint(
+    file: Path, config: str | None, strict: bool, quiet: bool
+) -> tuple[int, list[str]]:
     """Run yamllint on a single file. Returns (returncode, output_lines)."""
     cmd = ["yamllint", "--format", "parsable"]
     if config:
@@ -125,19 +129,22 @@ def parse_issues(lines: list[str]) -> list[dict]:
     for line in lines:
         m = pattern.match(line)
         if m:
-            issues.append({
-                "line": int(m.group(1)),
-                "col": int(m.group(2)),
-                "level": m.group(3),
-                "message": m.group(4),
-                "rule": m.group(5),
-            })
+            issues.append(
+                {
+                    "line": int(m.group(1)),
+                    "col": int(m.group(2)),
+                    "level": m.group(3),
+                    "message": m.group(4),
+                    "rule": m.group(5),
+                }
+            )
     return issues
 
 
 # ---------------------------------------------------------------------------
 # Auto-fix helpers (text-level)
 # ---------------------------------------------------------------------------
+
 
 def fix_trailing_spaces(text_lines: list[str]) -> list[str]:
     """Remove trailing whitespace from every line."""
@@ -186,7 +193,7 @@ def fix_colons(text_lines: list[str]) -> list[str]:
     """
     fixed = []
     for line in text_lines:
-        new_line = re.sub(r'(?<!["\']):(?!//|[\s\n])', ': ', line)
+        new_line = re.sub(r'(?<!["\']):(?!//|[\s\n])', ": ", line)
         fixed.append(new_line)
     return fixed
 
@@ -197,7 +204,7 @@ def fix_truthy(text_lines: list[str]) -> list[str]:
     Only replaces bare scalar values after a mapping key (': ').
     """
     pattern = re.compile(
-        r'^(\s*[\w\-]+\s*:\s*)(yes|no|on|off)\s*$',
+        r"^(\s*[\w\-]+\s*:\s*)(yes|no|on|off)\s*$",
         re.IGNORECASE,
     )
     fixed = []
@@ -234,11 +241,11 @@ def fix_document_start(text_lines: list[str]) -> list[str]:
 # ---------------------------------------------------------------------------
 
 # Regex helpers used by fix_line_length
-_RE_MAPPING_KEY   = re.compile(r'^(\s*)([\w\-./]+\s*:\s+)(.*)')   # key: long value
-_RE_LIST_ITEM     = re.compile(r'^(\s*-\s+)(.*)')                  # - long value
-_RE_FLOW_SEQ      = re.compile(r'^(\s*[\w\-./]+\s*:\s*)(\[.*\])\s*$')  # key: [a, b, c]
-_RE_FLOW_MAP      = re.compile(r'^(\s*[\w\-./]+\s*:\s*)(\{.*\})\s*$')  # key: {a: 1}
-_RE_COMMENT       = re.compile(r'^\s*#')                           # comment line
+_RE_MAPPING_KEY = re.compile(r"^(\s*)([\w\-./]+\s*:\s+)(.*)")  # key: long value
+_RE_LIST_ITEM = re.compile(r"^(\s*-\s+)(.*)")  # - long value
+_RE_FLOW_SEQ = re.compile(r"^(\s*[\w\-./]+\s*:\s*)(\[.*\])\s*$")  # key: [a, b, c]
+_RE_FLOW_MAP = re.compile(r"^(\s*[\w\-./]+\s*:\s*)(\{.*\})\s*$")  # key: {a: 1}
+_RE_COMMENT = re.compile(r"^\s*#")  # comment line
 
 
 def _indent_of(line: str) -> str:
@@ -400,7 +407,7 @@ def _fix_long_line(line: str, max_len: int) -> list[str]:
     # ── Case 4: list item  - long string value
     m = _RE_LIST_ITEM.match(line)
     if m:
-        list_prefix, value = m.group(1), m.group(2)   # list_prefix = "    - "
+        list_prefix, value = m.group(1), m.group(2)  # list_prefix = "    - "
         if value and not value.startswith(("&", "*", "|", ">")):
             if " " not in value.strip():
                 return [line]
@@ -413,6 +420,7 @@ def _fix_long_line(line: str, max_len: int) -> list[str]:
     # These lines have leading spaces and plain prose — word-wrap in place.
     if indent and line.strip() and not line.strip().startswith(("-", "{", "[", "&", "*", "|", ">")):
         import textwrap
+
         body_width = max(40, max_len - len(indent))
         words = line.strip()
         # Skip single unbreakable tokens (URLs, paths, hashes)
@@ -466,14 +474,14 @@ def fix_line_length(
 # ---------------------------------------------------------------------------
 
 FIXABLE_RULE_MAP: dict[str, callable] = {
-    "trailing-spaces":        fix_trailing_spaces,
+    "trailing-spaces": fix_trailing_spaces,
     "new-line-at-end-of-file": fix_new_line_at_end,
-    "empty-lines":            fix_empty_lines,
-    "indentation":            fix_indentation,
-    "colons":                 fix_colons,
-    "truthy":                 fix_truthy,
-    "document-start":         fix_document_start,
-    "line-length":            fix_line_length,
+    "empty-lines": fix_empty_lines,
+    "indentation": fix_indentation,
+    "colons": fix_colons,
+    "truthy": fix_truthy,
+    "document-start": fix_document_start,
+    "line-length": fix_line_length,
 }
 
 
@@ -481,13 +489,14 @@ FIXABLE_RULE_MAP: dict[str, callable] = {
 # Auto-fix orchestration
 # ---------------------------------------------------------------------------
 
+
 def _extract_max_len(issues: list[dict], default: int = 120) -> int:
     """
     Pull the configured max line length from yamllint's message text.
     yamllint emits: "line too long (N > M characters)"
     Returns M if found, otherwise default.
     """
-    pat = re.compile(r'line too long \(\d+ > (\d+) characters?\)')
+    pat = re.compile(r"line too long \(\d+ > (\d+) characters?\)")
     for issue in issues:
         if issue["rule"] == "line-length":
             m = pat.search(issue["message"])
@@ -572,7 +581,7 @@ def _format_issue_block(issue: dict, src: list[str]) -> list[str]:
         🔴 line 12, col 5 · [error] trailing spaces  (trailing-spaces)
            10 │   key: value
            11 │
-        ▶  12 │   bad line with spaces   
+        ▶  12 │   bad line with spaces
               │       ^
            13 │   next: line
     """
@@ -612,6 +621,7 @@ def _format_issue_block(issue: dict, src: list[str]) -> list[str]:
 # ---------------------------------------------------------------------------
 # Reporting
 # ---------------------------------------------------------------------------
+
 
 def print_report(
     all_files: list[Path],
@@ -680,6 +690,7 @@ def print_report(
 # Entry point
 # ---------------------------------------------------------------------------
 
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description=(
@@ -716,17 +727,20 @@ Notes:
         ),
     )
     parser.add_argument(
-        "-c", "--config",
+        "-c",
+        "--config",
         metavar="CONFIG",
         help="Path to a custom yamllint config file",
     )
     parser.add_argument(
-        "-s", "--strict",
+        "-s",
+        "--strict",
         action="store_true",
         help="Return non-zero exit code on warnings as well as errors",
     )
     parser.add_argument(
-        "-q", "--quiet",
+        "-q",
+        "--quiet",
         action="store_true",
         help="Output only error-level problems (suppress warnings)",
     )
@@ -747,8 +761,7 @@ Notes:
         subprocess.run(["yamllint", "--version"], capture_output=True, check=True)
     except FileNotFoundError:
         print(
-            "Error: 'yamllint' is not installed.\n"
-            "Install it with:  pip install yamllint",
+            "Error: 'yamllint' is not installed.\n" "Install it with:  pip install yamllint",
             file=sys.stderr,
         )
         sys.exit(2)
